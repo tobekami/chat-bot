@@ -1,0 +1,5 @@
+Pantry App: Developed a pantry management application using Next.js, Material UI, and Firebase. This project involved implementing features like adding, deleting, and updating pantry items, search functionality, and integrating camera uploads for item images. It also included advanced features like recipe suggestions based on pantry contents using OpenAI API.
+
+Chatbot Project: Collaborated on a team project to build a chatbot using Next.js and the OpenRouter API. Key features included intelligent responses using language models, deployment on AWS EC2, multi-language support, and feedback mechanisms for user interactions.
+
+Ladies in Tech Training Workshop Program: Contributed to a workshop program aimed at empowering young women with skills in electronics, manufacturing, engineering, and tech. The program covered various topics, including mechanical fabrication and laser cutting.

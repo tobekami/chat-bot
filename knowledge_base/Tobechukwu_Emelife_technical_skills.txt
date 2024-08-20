@@ -1,0 +1,4 @@
+Programming Languages: Proficient in JavaScript, TypeScript, and Python.
+Frameworks and Libraries: Experience with React, Next.js, and Material UI.
+Databases: Skilled in using Firebase for real-time database management and authentication.
+Tools and Platforms: Familiar with GitHub for version control and collaboration, Vercel for deployment, and AWS services.

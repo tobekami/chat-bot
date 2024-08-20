@@ -1,0 +1,64 @@
+// lib/supabase.ts
+import { createClient } from '@supabase/supabase-js';
+import { pipeline } from '@xenova/transformers';
+
+interface Document {
+  id: number;
+  content: string;
+  similarity: number;
+}
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+// Client for public operations (can be used client-side)
+export const supabasePublic = createClient(supabaseUrl, supabaseAnonKey);
+
+// Client for admin operations (use only in secure server-side contexts)
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+// ... rest of the file remains the same
+
+let encoder: any;
+
+async function getEncoder() {
+  if (!encoder) {
+    encoder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+  }
+  return encoder;
+}
+
+export async function generateEmbedding(text: string) {
+  const encoder = await getEncoder();
+  const result = await encoder(text, { pooling: 'mean', normalize: true });
+  return Array.from(result.data);
+}
+
+export async function querySupabase(query: string, topK: number = 3) {
+  const embedding = await generateEmbedding(query);
+
+  const { data: documents, error } = await supabasePublic.rpc('match_documents', {
+    query_embedding: embedding,
+    match_threshold: 0.7,
+    match_count: topK,
+  }) as { data: Document[] | null, error: any };
+
+  if (error) console.error('Error querying Supabase:', error);
+
+  return documents?.map((doc: Document) => doc.content) || [];
+}
+
+
+export async function insertDocument(content: string) {
+  const embedding = await generateEmbedding(content);
+
+  const { data, error } = await supabaseAdmin
+    .from('documents')
+    .insert({ content, embedding });
+
+  if (error) console.error('Error inserting document:', error);
+
+  return data;
+}
+
