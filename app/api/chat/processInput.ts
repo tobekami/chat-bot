@@ -3,8 +3,8 @@ import fetch from 'node-fetch';
 import { querySupabase } from '../../../lib/supabase';
 
 const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY!;
-const YOUR_SITE_URL = 'https://your-site-url.com';
-const YOUR_SITE_NAME = 'Your Site Name';
+const YOUR_SITE_URL = 'https://chat-bot-liart-eight.vercel.app';
+const YOUR_SITE_NAME = 'Chatbot';
 
 interface OpenRouterResponse {
   choices: Array<{
