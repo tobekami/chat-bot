@@ -1,6 +1,7 @@
-import { useState } from 'react'
 import { Message } from '../lib/firestore'
-import { FaUser, FaRobot, FaEllipsisV } from 'react-icons/fa'
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { User, Bot, MoreVertical, Trash2, XCircle } from 'lucide-react'
 
 interface ChatMessageProps {
   message: Message
@@ -9,41 +10,37 @@ interface ChatMessageProps {
 }
 
 export default function ChatMessage({ message, onDelete, onClearChat }: ChatMessageProps) {
-  const [showMenu, setShowMenu] = useState(false)
   const isUser = message.sender === 'user'
 
-  const handleDelete = () => {
-    onDelete(message.id)
-    setShowMenu(false)
-  }
-
   return (
-    <div
-      className={`flex w-{70vw} ${isUser ? 'justify-end' : 'justify-start'} relative group`}
-      onMouseEnter={() => setShowMenu(true)}
-      onMouseLeave={() => setShowMenu(false)}
-    >
-      <div className={`p-3 my-2 mx-2 rounded-lg max-w-xs shadow ${isUser ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'} flex-row items-center static`}>
-        <div className={`absolute top-6 ${isUser ? 'right-4' : 'left-4'}`}>{isUser ? <FaUser /> : <FaRobot />}</div>
-        <div className={`w-[100%] ${isUser ? 'pr-[18px]' : 'pl-[18px]'}`}><span>{message.text}</span></div>
-      </div>
-      {showMenu && (
-        <div className={`absolute  ${isUser ? 'top-0 left-0 mt-1 ml-1' : 'top-0 right-0 mt-1 mr-1'}`}>
-          <button onClick={() => setShowMenu(!showMenu)} className="text-gray-400 hover:text-gray-600">
-            <FaEllipsisV />
-          </button>
-          {showMenu && (
-            <div className={`absolute w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10 ${isUser ? 'left-0 mt-2' : 'right-0 mt-2'}`}>
-              <button onClick={handleDelete} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
-                Delete Chat
-              </button>
-              <button onClick={onClearChat} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
-                Clear Chat
-              </button>
-            </div>
-          )}
+    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4 group`}>
+      <div className={`relative max-w-[70%] p-3 rounded-lg shadow-md ${
+        isUser ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
+      }`}>
+        <div className={`absolute top-3 ${isUser ? '-left-8' : '-right-8'}`}>
+          {isUser ? <User className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
         </div>
-      )}
+        <div className="flex items-start">
+          <p className="flex-grow mr-2">{message.text}</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 -mt-1">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onDelete(message.id)}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>Delete Message</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onClearChat}>
+                <XCircle className="mr-2 h-4 w-4" />
+                <span>Clear Chat</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
     </div>
   )
 }

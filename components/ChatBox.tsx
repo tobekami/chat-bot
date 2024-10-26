@@ -6,6 +6,10 @@ import { auth } from "../lib/firebaseConfig";
 import { saveMessage, getMessages, Message, clearMessages, deleteMessage } from "../lib/firestore";
 import ChatMessage from "./ChatMessage";
 import { useLanguage } from "./LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Send, Trash2 } from "lucide-react";
 
 export default function ChatBox() {
   const [user] = useAuthState(auth);
@@ -43,48 +47,64 @@ export default function ChatBox() {
     const botMessage: Omit<Message, "id" | "timestamp"> = { text: data.response, sender: "bot", language };
     await saveMessage(user.uid, botMessage, language);
 
-    loadMessages(); // Reload messages after sending
+    loadMessages();
   };
 
   const handleDeleteMessage = async (messageId: string) => {
     if (user?.uid) {
       await deleteMessage(user.uid, messageId);
-      loadMessages(); // Reload messages after deleting
+      loadMessages();
     }
   };
 
   const handleClearMessages = async () => {
     if (user?.uid) {
       await clearMessages(user.uid);
-      loadMessages(); // Reload messages after clearing
+      loadMessages();
     }
   };
 
-  return (
-    <div className="w-full max-w-2xl p-4 bg-white rounded-lg shadow-lg">
-      <div className="absolute w-fit min-h-screen bg-cover bg-center bg-fixed bg-[url('/images/image_no_bg.png')] opacity-30 -z-10" />
-      <div className="flex flex-col space-y-4 overflow-y-auto" style={{ maxHeight: "70vh" }}>
-        {messages.map((msg) => (
-          <ChatMessage
-            key={msg.id}
-            message={msg}
-            onDelete={() => handleDeleteMessage(msg.id)} // Use handleDeleteMessage
-            onClearChat={handleClearMessages} // Use handleClearMessages
-          />
-        ))}
-      </div>
-      <div className="flex space-x-2 mt-4">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Type a message..."
-        />
-        <button onClick={sendMessage} className="px-4 py-2 font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-          Send
-        </button>
+return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-4">
+      <div className="w-full max-w-2xl bg-white/10 backdrop-blur-md rounded-lg shadow-lg overflow-hidden">
+        <div className="p-4 flex justify-between items-center border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-white">Chat</h2>
+          <Button variant="destructive" size="sm" onClick={handleClearMessages}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Clear Chat
+          </Button>
+        </div>
+        <ScrollArea className="h-[60vh] p-4">
+          {messages.map((msg) => (
+            <ChatMessage
+              key={msg.id}
+              message={msg}
+              onDelete={() => handleDeleteMessage(msg.id)}
+              onClearChat={handleClearMessages}
+            />
+          ))}
+        </ScrollArea>
+        <div className="p-4 border-t border-gray-200">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMessage();
+            }}
+            className="flex space-x-2"
+          >
+            <Input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-1"
+            />
+            <Button type="submit">
+              <Send className="w-4 h-4 mr-2" />
+              Send
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );

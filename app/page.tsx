@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'  // Use 'next/navigation' for App Router
+import { useRouter } from 'next/navigation'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../lib/firebaseConfig'
 import AuthButton from '../components/AuthButton'
+import { motion } from 'framer-motion'
+import { Loader2 } from 'lucide-react'
 
 export default function Home() {
   const [user, loading] = useAuthState(auth)
@@ -18,22 +20,55 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="absolute w-screen min-h-screen bg-cover bg-center bg-fixed bg-[url('/images/image_no_bg.png')] opacity-40 -z-10"/>
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-b-4 border-blue-500 rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <Loader2 className="w-16 h-16 text-white animate-spin" />
           <p className="mt-4 text-xl font-semibold text-white">Loading...</p>
-        </div>
+        </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="absolute w-screen min-h-screen bg-cover bg-center bg-fixed bg-[url('/images/image_no_bg.png')] opacity-30 -z-10"/>
-      <h1 className="text-4xl font-bold mb-6">Welcome to our Chatbot</h1>
-      <p className="mb-6 text-lg">Please sign in to start chatting</p>
-      <AuthButton />
+    <div className="flex flex-col items-center justify-center min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0 bg-cover bg-center bg-fixed bg-[url('/images/image_no_bg.png')] opacity-30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/50 to-purple-600/50" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="z-10 text-center p-8 bg-white/10 backdrop-blur-md rounded-lg shadow-lg max-w-md w-full"
+      >
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="text-4xl sm:text-5xl font-bold mb-6 text-white"
+        >
+          Welcome to Chatbot AI
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="mb-8 text-lg sm:text-xl text-white/90"
+        >
+          Experience the future of conversation. Sign in to start chatting!
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="w-full max-w-sm mx-auto"
+        >
+          <AuthButton />
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

@@ -9,6 +9,9 @@ import LanguageSelector from '../../components/LanguageSelector'
 import FeedbackForm from '../../components/FeedbackForm'
 import { LanguageProvider } from '../../components/LanguageContext'
 import { signOut } from 'firebase/auth'
+import { Button } from "@/components/ui/button"
+import { Loader2, LogOut } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export default function ChatbotPage() {
   const [user, loading] = useAuthState(auth)
@@ -26,12 +29,16 @@ export default function ChatbotPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="absolute w-screen min-h-screen bg-cover bg-center bg-fixed bg-[url('/images/image_no_bg.png')] opacity-30 -z-10"/>
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-b-4 border-blue-500 rounded-full animate-spin"></div>
-          <p className="mt-4 text-xl font-semibold text-black">Loading...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <Loader2 className="w-16 h-16 text-white animate-spin" />
+          <p className="mt-4 text-xl font-semibold text-white">Loading...</p>
+        </motion.div>
       </div>
     )
   }
@@ -42,17 +49,30 @@ export default function ChatbotPage() {
 
   return (
     <LanguageProvider>
-      <div className="flex flex-col items-center justify-center min-h-screen m-10">
-        <button
-          onClick={handleLogout}
-          className="absolute top-12 left-14 px-4 py-2 text-white bg-red-500 rounded-lg shadow hover:bg-red-600 focus:outline-none"
-        >
-          Log Out
-        </button>
-        <h1 className="text-3xl font-bold mb-4">Chat with our AI</h1>
-        <LanguageSelector />
-        <ChatBox />
-        <FeedbackForm />
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
+        <header className="p-4 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-white">Hey there</h1>
+          <Button
+            onClick={handleLogout}
+            variant="destructive"
+            className="flex items-center"
+          >
+            <LogOut className="mr-2 h-4 w-4" /> Log Out
+          </Button>
+        </header>
+        <main className="flex-grow flex flex-col items-center justify-center p-4">
+          <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6 w-full max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <LanguageSelector />
+              <ChatBox />
+              <FeedbackForm />
+            </motion.div>
+          </div>
+        </main>
       </div>
     </LanguageProvider>
   )
